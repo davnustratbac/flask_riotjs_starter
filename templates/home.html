@@ -14,11 +14,40 @@
         <h1>Flask Riot.js Starter</h1>
         <div each={item in items}>
           {item.body}
+
+          <a href="#" onclick={deleteItem}>X</a>
         </div>
+
+        <input type="text" name="body"/><button onclick={addItem}>+</button>
         <h4>Documentation</h4>
         <a href="http://riotjs.com" target="_blank">Riot.js</a>
         <a href="http://flask.pocoo.org/" target="_blank">Flask</a>
 
+
+        addItem(e){
+          body = this.body.value
+
+          reqwest({
+            method: 'POST',
+            url: '/items.json',
+            data: {body: body}
+          }, function(resp){
+            window.items.push(resp.item)
+            riot.update()
+          })
+        }
+        deleteItem(e){
+          body = e.item.item.body
+
+          reqwest({
+            method:'DELETE',
+            url: '/items.json',
+            data: {body: body}
+          }, function(resp){
+            window.items.splice(window.items.indexOf(e.item.item), 1)
+            riot.update()
+          })
+        }
         reqwest('/items.json', function(resp){
           window.items = resp.items
           riot.update()
